@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: 'Nunito Sans', sans-serif; color: #000; background: #fff; }
+  body { margin: 0; font-family: 'Nunito Sans', sans-serif; font-synthesis: none; color: #000; background: #fff; }
   .layout { display: flex; min-height: 100vh; flex-direction: column; }
   .hero { height: 40vh; min-height: 220px; }
   .hero img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
@@ -19,7 +19,7 @@
   h1 { font-size: clamp(26px, 2.4vw, 34px); font-weight: 600; margin: 0; letter-spacing: -0.04em; }
   .sub { color: #A7A7A7; margin: 4px 0 0; }
   .tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #E7E7E7; border-radius: 20px; padding: 6px; margin-top: 24px; }
-  .tabs button { height: 60px; border: 0; border-radius: 20px; background: none; font: inherit; font-weight: 500; cursor: pointer; }
+  .tabs button { height: 60px; border: 0; border-radius: 20px; background: none; font: inherit; font-weight: 400; cursor: pointer; }
   .tabs button.active { background: #CDCDCD; border: 1px solid #E7E7E7; }
   .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 24px; list-style: none; padding: 0; }
   .steps span.bar { display: block; height: 6px; border-radius: 9999px; background: #E7E7E7; }
@@ -38,6 +38,9 @@
   .input::placeholder { color: #A7A7A7; font-weight: 500; }
   .pw { position: relative; }
   .pw button { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: none; border: 0; cursor: pointer; color: #7A7A7A; font-size: 14px; }
+  @keyframes eye-toggle { 0% { transform: scale(.62) rotate(-12deg); opacity: .35; } 65% { transform: scale(1.16) rotate(4deg); opacity: 1; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+  .pw button.eye-animate svg { transform-origin: center; animation: eye-toggle 280ms cubic-bezier(.2,.8,.2,1) both; }
+  @media (prefers-reduced-motion: reduce) { .pw button.eye-animate svg { animation-duration: 1ms; } }
   .strength { margin-top: 12px; border: 1px solid #E7E7E7; border-radius: 16px; padding: 16px; }
   .strength .bars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .strength .bars span { height: 6px; border-radius: 9999px; background: #E7E7E7; }
@@ -75,8 +78,37 @@
   .btn.dark { background: #000; color: #fff; border: 0; }
   .btn.dark:hover { background: #222; }
   .btn.full { width: 100%; }
-  .login-fields { display: grid; gap: 16px; margin-top: 24px; }
-  .login-actions { display: grid; gap: 16px; margin-top: 24px; }
+  .login-fields { display: grid; gap: 0; margin-top: 28px; }
+  .login-label { display: block; margin: 0 0 14px; font-size: 20px; line-height: 1.25; font-weight: 400; letter-spacing: -0.03em; text-transform: none; color: #000; }
+  .login-field-wrap { position: relative; }
+  .login-input { width: 100%; height: 69px; border: 1px solid #E7E7E7; border-radius: 20px; padding: 0 64px 0 30px; font: inherit; font-size: 16px; font-weight: 500; letter-spacing: -0.03em; color: #000; background: #fff; outline: none; }
+  .login-input:focus { border-color: rgba(0,0,0,0.4); }
+  .login-input::placeholder { color: #A7A7A7; font-weight: 400; }
+  .login-password-label { margin-top: 25px; }
+  .login-field-wrap .pw button { right: 30px; color: #000; display: flex; align-items: center; justify-content: center; padding: 4px; }
+  .email-check { position: absolute; right: 27px; top: 50%; transform: translateY(-50%); display: flex; width: 20px; height: 20px; align-items: center; justify-content: center; border-radius: 50%; background: rgba(49,17,29,.1); color: #fff; transition: background .15s; }
+  .email-check.valid { background: #000; }
+  .email-check .ico { width: 12px; height: 12px; stroke-width: 3; }
+  .login-options { margin: 23px 10px 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 400; letter-spacing: -0.03em; }
+  .remember-label { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+  .remember-label input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .remember-box { display: flex; width: 20px; height: 20px; align-items: center; justify-content: center; border-radius: 6px; background: rgba(232,232,232,.5); color: transparent; transition: background .15s,color .15s; }
+  .remember-label input:checked + .remember-box { background: #000; color: #fff; }
+  .remember-label input:focus-visible + .remember-box { outline: 2px solid #555; outline-offset: 2px; }
+  .remember-box .ico { width: 14px; height: 14px; stroke-width: 3; }
+  .recover-button { padding: 0; border: 0; background: none; color: #000; font: inherit; text-decoration: underline; cursor: pointer; }
+  .login-msg { margin: 14px 0 0; min-height: 1em; text-align: center; font-size: 14px; }
+  .login-submit { display: block; width: min(100%, 393px); height: 70px; margin: 25px auto 0; border: 0; border-radius: 20px; background: #CDCDCD; color: #0B0B0B; font: inherit; font-size: 16px; font-weight: 500; letter-spacing: -0.03em; cursor: pointer; transition: background .15s,color .15s; }
+  .login-submit:not(:disabled) { background: #000; color: #fff; }
+  .login-submit:not(:disabled):hover { background: #222; }
+  .login-submit:disabled { cursor: default; }
+  .login-divider { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 30px 0 0; color: #CECECE; font-size: 14px; font-weight: 400; letter-spacing: -0.03em; white-space: nowrap; }
+  .login-divider::before, .login-divider::after { content: ""; height: 1px; flex: 1; background: #F1F1F1; }
+  .login-qr { display: flex; width: min(100%, 423px); height: 50px; align-items: center; justify-content: center; gap: 12px; margin: 20px auto 0; border: 1px solid #E7E7E7; border-radius: 20px; background: #fff; color: #000; font: inherit; font-size: 16px; font-weight: 400; letter-spacing: -0.03em; cursor: pointer; }
+  .login-qr:hover { background: rgba(0,0,0,.05); }
+  .login-legal { max-width: 350px; margin: 30px auto 0; padding-top: 20px; text-align: center; color: #A7A7A7; font-size: 14px; font-weight: 400; }
+  .login-legal a { color: #000; }
+  @media (max-width: 480px) { .login-label { font-size: 18px; } .login-input { height: 60px; padding-left: 20px; } .login-field-wrap .pw button { right: 20px; } }
   @media (min-width: 1024px) {
     .layout { flex-direction: row; }
     .hero { width: 51.7%; height: 100vh; min-height: 0; position: sticky; top: 0; flex-shrink: 0; align-self: flex-start; }
@@ -101,35 +133,48 @@
     </div>
 
     <main>
-      <h1 id="title">Crear cuenta</h1>
-      <p class="sub" id="subtitle">Cifrado E2E activado por defecto</p>
+      <h1 id="title">Bienvenido de nuevo!</h1>
+      <p class="sub" id="subtitle">Por favor ingresa tus datos</p>
 
       <div class="tabs">
-        <button type="button" data-mode="login">Iniciar sesión</button>
-        <button type="button" data-mode="register" class="active">Registrarse</button>
+        <button type="button" data-mode="login" class="active">Iniciar sesión</button>
+        <button type="button" data-mode="register">Registrarse</button>
       </div>
 
       <form id="form" novalidate>
         <!-- Login -->
-        <div id="login-view" class="hidden">
+        <div id="login-view">
           <div class="login-fields">
-            <div><label class="lbl" for="loginEmail">Correo</label><input class="input" id="loginEmail" type="email" placeholder="correo@ejemplo.com" autocomplete="email" /></div>
-            <div><label class="lbl" for="loginPassword">Contraseña</label>
+            <label class="login-label" for="loginEmail">Usuario</label>
+            <div class="login-field-wrap">
+              <input class="login-input" id="loginEmail" type="email" placeholder="correo@ejemplo.com" autocomplete="email" />
+              <span class="email-check" id="email-check" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span>
+            </div>
+            <label class="login-label login-password-label" for="loginPassword">Contraseña</label>
+            <div class="login-field-wrap">
               <div class="pw">
-                <input class="input" id="loginPassword" type="password" placeholder="Ingresa tu contraseña" autocomplete="current-password" style="padding-right:56px" />
+                <input class="login-input" id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" />
                 <button type="button" data-toggle="loginPassword" aria-label="Mostrar contraseña"><svg class="ico" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
               </div>
             </div>
           </div>
-          <p class="msg" id="login-msg" role="alert"></p>
-          <div class="login-actions">
-            <button type="submit" class="btn dark" id="login-submit" disabled>Ingresar</button>
-            <button type="button" class="btn ghost" id="qr"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><path d="M14 14h3v3h-3zM19 19h1v1h-1zM14 19h1"/></svg>Escanear código QR</button>
+          <div class="login-options">
+            <label class="remember-label" for="remember">
+              <input type="checkbox" id="remember" />
+              <span class="remember-box"><svg class="ico" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span>
+              <span>Recordar datos</span>
+            </label>
+            <button type="button" class="recover-button" id="recover">Recuperar contraseña</button>
           </div>
+          <p class="login-msg" id="login-msg" role="alert" aria-live="polite"></p>
+          <button type="submit" class="login-submit" id="login-submit" disabled>Ingresar</button>
+          <div class="login-divider"><span>O continúa con</span></div>
+          <button type="button" class="login-qr" id="qr"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><path d="M14 14h3v3h-3zM19 19h1v1h-1zM14 19h1"/></svg>Escanear código QR</button>
+          <p class="login-legal">Al iniciar sesión, aceptas nuestros <a href="#">Términos de servicio</a> y nuestra <a href="#">Política de privacidad.</a></p>
         </div>
 
         <!-- Register -->
-        <div id="register-view">
+        <div id="register-view" class="hidden">
           <ol class="steps">
             <li data-step="1"><span class="bar on"></span>Datos</li>
             <li data-step="2"><span class="bar"></span>Seguridad</li>
@@ -217,7 +262,7 @@
         </div>
       </form>
 
-      <p class="sub" style="margin-top:32px;font-size:14px;text-align:center">Al iniciar sesión, aceptas nuestros Términos de servicio y nuestra Política de privacidad.</p>
+      <p class="sub hidden" id="register-legal" style="margin-top:32px;font-size:14px;text-align:center">Al iniciar sesión, aceptas nuestros <a href="#" style="color:#000">Términos de servicio</a> y nuestra <a href="#" style="color:#000">Política de privacidad.</a></p>
     </main>
   </div>
 </div>
@@ -227,7 +272,7 @@
   let iface = 'estandar';
   let resendLeft = 0;
   let timer = null;
-  let mode = 'register';
+  let mode = 'login';
   const ARROW_RIGHT = '<svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
   const $ = (id) => document.getElementById(id);
@@ -292,6 +337,7 @@
     e.preventDefault();
     if (mode === 'login') {
       if (!/^\S+@\S+\.\S+$/.test($('loginEmail').value.trim())) return msg('Ingresa un correo válido', 'err');
+      if (!$('loginPassword').value) return msg('Ingresa tu contraseña', 'err');
       return msg('Inicio de sesión de demostración (sin backend conectado).', 'ok');
     }
     if (step === 1) {
@@ -322,13 +368,24 @@
     $('subtitle').textContent = register ? 'Cifrado E2E activado por defecto' : 'Por favor ingresa tus datos';
     $('login-view').classList.toggle('hidden', register);
     $('register-view').classList.toggle('hidden', !register);
+    $('register-legal').classList.toggle('hidden', !register);
     if (register) showStep(1);
     msg('');
   }));
 
+  const EYE_OPEN = '<svg class="ico" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const EYE_CLOSED = '<svg class="ico" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><path d="m3 3 18 18"/></svg>';
   document.querySelectorAll('[data-toggle]').forEach((btn) => btn.addEventListener('click', () => {
     const input = $(btn.dataset.toggle);
-    input.type = input.type === 'password' ? 'text' : 'password';
+    const visible = input.type === 'password';
+    input.type = visible ? 'text' : 'password';
+    btn.setAttribute('aria-label', visible ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    btn.setAttribute('aria-pressed', String(visible));
+    btn.classList.remove('eye-animate');
+    btn.innerHTML = visible ? EYE_CLOSED : EYE_OPEN;
+    void btn.offsetWidth;
+    btn.classList.add('eye-animate');
+    btn.addEventListener('animationend', () => btn.classList.remove('eye-animate'), { once: true });
   }));
 
   $('regPassword').addEventListener('input', (e) => {
@@ -362,10 +419,18 @@
     });
   });
 
-  const loginReady = () => { $('login-submit').disabled = !($('loginEmail').value.trim() && $('loginPassword').value); };
+  const EMAIL_RE = /^\S+@\S+\.\S+$/;
+  const loginReady = () => {
+    $('login-submit').disabled = !($('loginEmail').value.trim() && $('loginPassword').value);
+    $('email-check').classList.toggle('valid', EMAIL_RE.test($('loginEmail').value.trim()));
+  };
   ['loginEmail', 'loginPassword'].forEach((id) => $(id).addEventListener('input', loginReady));
   loginReady();
 
+  $('recover').addEventListener('click', () => {
+    if (!EMAIL_RE.test($('loginEmail').value.trim())) return msg('Ingresa tu correo para recuperar la contraseña', 'err');
+    msg('La recuperación de contraseña es una demostración; no hay backend conectado.', 'ok');
+  });
   $('qr').addEventListener('click', () => msg('La lectura de código QR estará disponible pronto'));
 
   showStep(1);
